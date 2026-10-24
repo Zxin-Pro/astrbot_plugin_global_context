@@ -1,9 +1,9 @@
 name: astrbot_plugin_global_context
 display_name: 全局上下文与长期记忆
-desc: 让 Bot 在跨群聊/私聊的全局视野下保持连续上下文：入站消息统一入池、上下文达 80% 时主动压缩、长期记忆由 LLM 自主决定何时读何时写（工具驱动，不盲目注入）。
+desc: 让 Bot 在跨群聊/私聊的全局视野下保持连续上下文：入站消息统一入池、上下文达 80% 时主动压缩、长期记忆由 LLM 自主决定何时读何时写（工具驱动，按需召回，不盲目注入）。
 short_desc: 跨会话全局视野 + 80% 自动压缩 + LLM 自主长期记忆
-version: 1.0.0
-author: dsh
+version: 1.1.0
+author: Zxin-Pro
 repo: https://github.com/Zxin-Pro/astrbot_plugin_global_context
 astrbot_version: ">=4.5.1,<5"
 support_platforms:
@@ -32,3 +32,55 @@ config:
     description: 是否在 system prompt 中提示 LLM「先调用 recall」；关闭后工具仍可使用，只是不再主动教模型去查
     type: bool
     default: true
+  enable_global_digest:
+    description: 是否注入「这个用户在其它的群 / 私聊里最近说过的话」跨会话片段
+    type: bool
+    default: true
+  inject_budget_ratio:
+    description: 全局片段可占用上下文窗口的最大比例（硬上限之一）
+    type: float
+    default: 0.15
+  global_inject_max_tokens:
+    description: 全局片段单轮注入的绝对 token 上限（硬上限之二）
+    type: int
+    default: 800
+  global_digest_window_hours:
+    description: 全局视野回溯的时间窗口（小时），默认 7 天
+    type: int
+    default: 168
+  global_filter_use_llm:
+    description: 候选内容超出预算时是否让 LLM 做二次筛选（会多花一次 LLM 调用）
+    type: bool
+    default: false
+  keep_recent_ratio:
+    description: 压缩后保留最近多少比例的原文（按轮次计）
+    type: float
+    default: 0.15
+  min_context_messages:
+    description: 上下文少于该条数时不做压缩
+    type: int
+    default: 6
+  fallback_context_tokens:
+    description: 用尽所有来源仍取不到模型窗口大小时使用的兜底窗口
+    type: int
+    default: 128000
+  enable_auto_recall:
+    description: 每轮自动检索长期记忆并注入【跨会话记忆】段落（无需模型主动调用 recall）
+    type: bool
+    default: true
+  auto_recall_top_k:
+    description: 自动召回单轮最多注入的记忆条数
+    type: int
+    default: 3
+  enable_auto_memory_write:
+    description: 对话结束后由插件在后台提炼 0-2 条稳定信息写入长期记忆；关闭则回到「只有模型主动调用 memorize 才写入」
+    type: bool
+    default: true
+  auto_memory_interval_sec:
+    description: 同一会话两次自动提炼的最小间隔（秒），用于节流
+    type: int
+    default: 300
+  auto_memory_max_items:
+    description: 单次自动提炼最多写入的记忆条数
+    type: int
+    default: 2
