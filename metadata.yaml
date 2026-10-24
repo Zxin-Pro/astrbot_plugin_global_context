@@ -1,0 +1,34 @@
+name: astrbot_plugin_global_context
+display_name: 全局上下文与长期记忆
+desc: 让 Bot 在跨群聊/私聊的全局视野下保持连续上下文：入站消息统一入池、上下文达 80% 时主动压缩、长期记忆由 LLM 自主决定何时读何时写（工具驱动，不盲目注入）。
+short_desc: 跨会话全局视野 + 80% 自动压缩 + LLM 自主长期记忆
+version: 1.0.0
+author: dsh
+repo: https://github.com/Zxin-Pro/astrbot_plugin_global_context
+astrbot_version: ">=4.5.1,<5"
+support_platforms:
+  - aiocqhttp
+  - telegram
+  - qq_official
+  - wecom
+  - lark
+  - dingtalk
+  - slack
+  - discord
+config:
+  compression_threshold:
+    description: 上下文占比达到该比例时主动压缩（0~1，默认 0.8 即 80%）
+    type: float
+    default: 0.8
+  message_pool_max_size:
+    description: 全局消息池最多保留的消息条数（超出后按时间从旧到新裁剪）
+    type: int
+    default: 20000
+  memory_top_k:
+    description: recall_long_term_memory 单次最多返回的记忆条数
+    type: int
+    default: 5
+  enable_auto_recall_hint:
+    description: 是否在 system prompt 中提示 LLM「先调用 recall」；关闭后工具仍可使用，只是不再主动教模型去查
+    type: bool
+    default: true

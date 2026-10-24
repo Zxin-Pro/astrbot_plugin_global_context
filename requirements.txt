@@ -1,0 +1,2 @@
+# 本插件只使用 Python 标准库（sqlite3 / json / re / asyncio / threading）与 AstrBot 自身的 SDK，
+# 因此没有第三方依赖。留空文件是 AstrBot 插件市场的约定，不要删除。

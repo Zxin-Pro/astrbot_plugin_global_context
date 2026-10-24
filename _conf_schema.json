@@ -1,0 +1,68 @@
+{
+  "compression_threshold": {
+    "description": "上下文占比达到该比例时触发压缩",
+    "type": "float",
+    "default": 0.8,
+    "hint": "0.8 = 80%。内置压缩器阈值固定 0.82 且无法通过配置修改，本插件在 0.80 处接管。"
+  },
+  "message_pool_max_size": {
+    "description": "全局消息池最多保留的消息条数",
+    "type": "int",
+    "default": 20000,
+    "hint": "超出后按时间从旧到新裁剪，避免 SQLite 无限增长。"
+  },
+  "memory_top_k": {
+    "description": "recall_long_term_memory 单次最多返回的记忆条数",
+    "type": "int",
+    "default": 5
+  },
+  "enable_auto_recall_hint": {
+    "description": "是否在 system prompt 中追加「先调用 recall」的引导",
+    "type": "bool",
+    "default": true,
+    "hint": "关闭后工具依然注册，只是不再主动提示，完全交给模型自己判断。"
+  },
+  "enable_global_digest": {
+    "description": "是否注入跨会话全局片段",
+    "type": "bool",
+    "default": true,
+    "hint": "只在未触发压缩的轮次注入，且受 inject_budget_ratio 与 global_inject_max_tokens 双重硬上限约束。"
+  },
+  "fallback_context_tokens": {
+    "description": "用尽所有来源仍取不到窗口大小时使用的兜底窗口",
+    "type": "int",
+    "default": 128000
+  },
+  "min_context_messages": {
+    "description": "上下文少于该条数时不做压缩",
+    "type": "int",
+    "default": 6
+  },
+  "keep_recent_ratio": {
+    "description": "压缩后保留最近多少比例的原文（按轮次计）",
+    "type": "float",
+    "default": 0.15,
+    "hint": "与内置压缩器 llm_compress_keep_recent_ratio 同义，建议 0.1~0.3。"
+  },
+  "inject_budget_ratio": {
+    "description": "全局片段可占用上下文窗口的最大比例",
+    "type": "float",
+    "default": 0.15
+  },
+  "global_inject_max_tokens": {
+    "description": "全局片段单轮注入的绝对 token 上限",
+    "type": "int",
+    "default": 800
+  },
+  "global_digest_window_hours": {
+    "description": "全局视野回溯的时间窗口（小时）",
+    "type": "int",
+    "default": 72
+  },
+  "global_filter_use_llm": {
+    "description": "候选超出预算时是否让 LLM 二次筛选",
+    "type": "bool",
+    "default": false,
+    "hint": "开启后每次注入可能多花一次 LLM 调用。"
+  }
+}
