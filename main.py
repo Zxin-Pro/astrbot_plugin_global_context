@@ -27,11 +27,12 @@ r"""全局上下文 + 自主长期记忆插件（AstrBot 4.x）。
    由模型自己决定何时读、何时写。on_llm_request 里只追加一段极短的"工具使用引导"，
    不注入任何记忆内容——记忆只有在模型主动调用 recall 之后才进入上下文。
 
-API 版本要求（均已对照 E:\DSH\AstrBot-4.25 源码核实）
+API 版本要求（均已对照 AstrBot 4.29.1 源码逐行核实）
 ------------------------------------------------------
-- filter.event_message_type(...)      : 4.9.0+（4.25 中不存在 filter.event_message，
+- filter.event_message_type(...)      : 4.9.0+（4.x 中不存在 filter.event_message，
                                          故本插件用 ALL 覆盖群聊+私聊，并在下方提供兼容垫片）
 - filter.on_llm_request                : 4.4.0+
+- filter.on_llm_response               : 4.5.1+（回复发出前调度后台记忆提炼）
 - context.add_llm_tools(*FunctionTool) : 4.5.1+（旧版 context.register_llm_tool 已废弃，不再使用）
 - context.llm_generate(...)            : 4.5.7+（sdk，versionadded 标注在 Context.llm_generate 上）
 - Star.initialize() / terminate()      : 4.x 生命周期钩子
@@ -64,7 +65,7 @@ PLUGIN_NAME = "astrbot_plugin_global_context"
 
 
 # --------------------------------------------------------------------------- #
-# 兼容垫片：优先用 filter.event_message（若某天 AstrBot 提供），否则回落 ALL 过滤器
+# 兼容垫片：4.x 没有 filter.event_message，统一用 EventMessageType.ALL 覆盖群聊+私聊
 # --------------------------------------------------------------------------- #
 def event_message(func):
     """一个监听器同时覆盖群聊与私聊（本插件对外的统一写法）。
