@@ -57,12 +57,41 @@
   "global_digest_window_hours": {
     "description": "全局视野回溯的时间窗口（小时）",
     "type": "int",
-    "default": 72
+    "default": 168,
+    "hint": "默认 7 天：跨会话记忆不该只在当天有效，之前用 72 小时。"
   },
   "global_filter_use_llm": {
     "description": "候选超出预算时是否让 LLM 二次筛选",
     "type": "bool",
     "default": false,
     "hint": "开启后每次注入可能多花一次 LLM 调用。"
+  },
+  "enable_auto_recall": {
+    "description": "每轮自动检索长期记忆并注入【跨会话记忆】段落",
+    "type": "bool",
+    "default": true,
+    "hint": "开启后无需模型主动调用 recall；新会话开场且检索无命中时，会退回注入该用户最近记忆画像。"
+  },
+  "auto_recall_top_k": {
+    "description": "自动召回最多注入的记忆条数",
+    "type": "int",
+    "default": 3
+  },
+  "enable_auto_memory_write": {
+    "description": "对话结束后自动提炼并写入长期记忆",
+    "type": "bool",
+    "default": true,
+    "hint": "开启后由插件在后台调用一次 LLM 提炼 0-2 条；关闭则回到“只有模型主动调用 memorize 才写入”。"
+  },
+  "auto_memory_interval_sec": {
+    "description": "同一会话两次自动提炼的最小间隔（秒）",
+    "type": "int",
+    "default": 300,
+    "hint": "节流开关，避免每轮都多花一次 LLM 调用。"
+  },
+  "auto_memory_max_items": {
+    "description": "单次自动提炼最多写入的记忆条数",
+    "type": "int",
+    "default": 2
   }
 }
